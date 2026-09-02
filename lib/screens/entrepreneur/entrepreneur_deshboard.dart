@@ -1,8 +1,6 @@
   import 'package:flutter/material.dart';
   import 'package:intl/intl.dart' as intl;
-  import 'package:projeto_pi/core/app_colors.dart';
-  import 'package:projeto_pi/screens/entrepreneur/entrepreneur_setup_screen.dart';
-  import '../../core/theme/app_colors.dart';
+  import '../../core/app_colors.dart';
   import 'entrepreneur_dashboard_data.dart';
 
  class EntrepreneurDashboard extends StatefulWidget {
@@ -16,18 +14,18 @@
    String _chartPeriod = '7';
    String _activeNav = 'dashboard';
 
-   List<ChartDataPoint> get _charData =>
-       _chartPeriod == '7' ? kCharData7 : kChartData30;
+   List<ChartDataPoint> get _chartData =>
+       _chartPeriod == '7' ? kChartData7 : kChartData30;
 
    void _go(String route) => Navigator.pushNamed(context, route);
 
    @override
    Widget build(BuildContext context) {
      final today = DateTime.now();
-     final dateStr - intl.DateFormat('EEEE, d\'de\' MMMM', 'pt_BR')
+     final dateStr = intl.DateFormat('EEEE, d\'de\' MMMM', 'pt_BR')
           .format(today)
-          .replaceFirst(today, weekday == 7 ? 'Sunday' : '', 'domingo')
-          .replaceFirst(today, weekday == 1 ? 'Monday' : '', 'segunda');
+          .replaceFirst(today.weekday == 7 ? 'Sunday' : '', 'domingo')
+          .replaceFirst(today.weekday == 1 ? 'Monday' : '', 'segunda');
 
      return Scaffold(
        backgroundColor: AppColors.background,
@@ -41,12 +39,10 @@
 
                      _buildHeader(dateStr),
 
-                     _buildKpiCards(),
-
                      _buildChartSection(),
 
-                     _buildUpcominfBookings(),
 
+                     _buildUpcomingBookings(),
                      const SizedBox(height: 24),
                    ],
                  ),
@@ -144,7 +140,7 @@
                      IconButton(
                          onPressed: () {},
                          icon: const Icon(Icons.settings_outlined,
-                           size: 20 color: Colors.white),
+                           size: 20, color: Colors.white),
                          padding: EdgeInsets.zero,
                          constraints: const BoxConstraints(),
                         ),
@@ -157,7 +153,7 @@
                  GridView.count(
                      crossAxisCount: 2,
                      crossAxisSpacing: 12,
-                     mainAxisExtent: 12,
+                     mainAxisExtent: 100,
                      shrinkWrap: true,
                      physics: const NeverScrollableScrollPhysics(),
                      childAspectRatio: 1.1,
@@ -173,7 +169,7 @@
                          value: 'R\$ 4.820',
                        ),
                        _KpiCard(
-                         icon: Icon.star,
+                         icon: Icons.star,
                          label: 'Avaliação média',
                          value: '4.9 ★',
                        ),
@@ -191,13 +187,13 @@
 
            Widget _buildKpiCards() => const SizedBox.shrink();
 
-           Widget_buildChartSection() {
+           Widget _buildChartSection() {
              return Container(
                margin: const EdgeInsets.fromLTRB(16, 16, 16, 0),
                padding: const EdgeInsets.all(16),
                decoration: BoxDecoration(
                  color: AppColors.surface,
-                 borderRadius: BorderRadiusGeometry.circular(20),
+                 borderRadius: BorderRadius.circular(20),
                  boxShadow: [
                    BoxShadow(
                      color: Colors.black.withOpacity(0.06),
@@ -215,10 +211,12 @@
                            size: 16, color: AppColors.primary),
                        const SizedBox(width: 8),
                        const Text(
-                         fontSize: 14,
-                         fontWeight: FontWeight.w700,
-                         color:AppColors.textPrimary,
-                        ),
+                         'Faturamento',
+                         style: TextStyle(
+                           fontSize: 14,
+                           fontWeight: FontWeight.w700,
+                           color:AppColors.textPrimary,
+                         ),
                        ),
                      ],
                    ),
@@ -243,7 +241,7 @@
                               return GestureDetector(
                                 onTap: () {
                                   setState(() {
-                                    _chartPeriod = e.value = '7D'
+                                    _chartPeriod = e.value == '7D'
                                       ? '7'
                                       : e.value == '30D'
                                           ? '30'
@@ -269,7 +267,7 @@
                                     child: Text(
                                       e.value,
                                       style: TextStyle(
-                                        fontWeight: 11,
+                                        fontSize: 11,
                                         fontWeight: FontWeight.w600,
                                         color: isActive
                                             ? Colors.white
@@ -288,8 +286,8 @@
 
                  SizedBox(
                   height: 150,
-                  child: _BarChart(data: _charData),
-                ),
+                  child: _BarChart(data: _chartData),
+               ),
              ],
            ),
          );
@@ -313,7 +311,7 @@
                child: Column(
                  children: [
                    Padding(
-                       padding: const EdgeInsetsGeometry.fromLTRB(16, 16, 16, 12),
+                       padding: const EdgeInsets.fromLTRB(16, 16, 16, 12),
                        child: Row(
                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
                          children: [
@@ -326,7 +324,7 @@
                              ),
                            ),
                            GestureDetector(
-                             onTap: () => _go('/entrepreneur-calender'),
+                             onTap: () => _go('/entrepreneur-calendar'),
                              child: const Text(
                                'Ver agenda',
                                style: TextStyle(
@@ -387,9 +385,9 @@
                             },
                             behavior: HitTestBehavior.opaque,
                             child: Padding(
-                                padding: const EdgeInsetsGeometry.symmetric(vertical: 8),
+                                padding: const EdgeInsets.symmetric(vertical: 8),
                                 child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.min,
+                                  mainAxisSize: MainAxisSize.min,
                                   children: [
                                     Icon(
                                       item.icon,
@@ -435,7 +433,7 @@
          color: Colors.white.withOpacity(0.15),
          borderRadius: BorderRadius.circular(20),
        ),
-       color: Column(
+       child: Column(
          crossAxisAlignment: CrossAxisAlignment.start,
          mainAxisAlignment: MainAxisAlignment.spaceBetween,
          children: [
@@ -452,7 +450,7 @@
              label,
              style: TextStyle(
                fontSize: 10,
-               color: Colors.white.withOpacity(0,6),
+               color: Colors.white.withOpacity(0.6),
              ),
            ),
          ],
@@ -513,27 +511,27 @@
     }
 
     class _BookingItem extends StatelessWidget {
-      final UpcomingBooking booking
+      final UpcomingBooking booking;
       final VoidCallback onChat;
 
       const _BookingItem({required this.booking, required this.onChat});
 
       @override
       Widget build(BuildContext context) {
-        final isPendig = booking.status = 'pending';
+        final isPending = booking.status == 'pending';
 
         return Padding(
-            padding: const EdgeInsetsGeometry.symmetric(horizontal: 16, vertical: 12),
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             child: Row(
               children: [
-                ClipRect(
+                ClipRRect(
                   borderRadius: BorderRadius.circular(12),
                   child: Image.network(
                     booking.avatarUrl,
                     width: 40,
                     height: 40,
                     fit: BoxFit.cover,
-                    errorBuilder: (_, __, ___), => Container(
+                    errorBuilder: (_, __, ___) => Container(
                       width: 40,
                       height: 40,
                       color: AppColors.primaryBg,
@@ -550,14 +548,88 @@
                       Text(
                         booking.clientName,
                         style: const TextStyle(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w700,
+                          color: AppColors.textPrimary,
+                        ),
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        '${booking.service} · ${booking.time}',
+                        style: const TextStyle(
+                          fontSize: 11,
+                          color: AppColors.textMuted,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
 
-        ),
-        )
-        ],
-                  )
-                )
-              ],
-            ),
-        )
-      }
-    }
+                if (isPending)
+                  Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      GestureDetector(
+                        onTap: () {},
+                        child: Container(
+                          width: 32,
+                          height: 32,
+                          decoration: BoxDecoration(
+                            color: const Color(0xFFF0FDF4),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: const Icon(Icons.check,
+                              size: 14, color: AppColors.success),
+                          ),
+                        ),
+                        const SizedBox(width: 6),
+                        GestureDetector(
+                          onTap: () {},
+                          child: Container(
+                            width: 32,
+                            height: 32,
+                            decoration: BoxDecoration(
+                              color: const Color(0xFFFEF2F2),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: const Icon(Icons.close,
+                                size: 14, color: AppColors.error,
+                            ),
+                          ),
+                        ],
+                      )
+                    else
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                        decoration: BoxDecoration(
+                        color: const Color(0xFFF0FDF4),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: const Text(
+                          'Confirmado',
+                        style: TextStyle(
+                          fontSize: 10,
+                          fontWeight: FontWeight.w700,
+                          color: AppColors.success,
+                        ),
+                      ),
+                    ),
+                  const SizedBox(width: 8),
+                  GestureDetector(
+                    onTap: onChat,
+                    child: Container(
+                      width: 32,
+                      height: 32,
+                      decoration: BoxDecoration(
+                        color: AppColors.primaryBg,
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: const Icon(Icons.chat_bubble_outline,
+                          size: 14, color: AppColors.primary),
+                    ),
+                  ),
+                ],
+              ),
+            );
+          }
+        }
